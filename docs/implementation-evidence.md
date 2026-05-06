@@ -21,6 +21,8 @@ This public mirror preserves those implementation ideas in generalized form.
 
 The public code and docs preserve these real patterns:
 
+- forked and reversed job-search scanning patterns for client discovery
+- source registry and title-filter concepts adapted from a manual-review job-search funnel
 - `--dry-run` before live execution
 - small live run limits before broad runs
 - targeted reruns by company or record ID
@@ -72,9 +74,10 @@ The public version is intentionally smaller. It keeps the reviewable architectur
 
 The public mirror does not fake the architecture. It preserves the real lessons:
 
+- job listings can be interpreted as both personal opportunity signals and client-demand signals
+- a forked job-search funnel can become a business-development source engine when the objective is reversed and automation is added on top
 - AI output needed staged review before automation.
 - Human review taught the system which records to reject, hold, enrich, draft, and sync.
 - Evidence had to survive from discovery into drafting.
 - CRM handoff needed approval gates, not a loose "draft exists" trigger.
 - Full automation became credible only after those gates stabilized.
-

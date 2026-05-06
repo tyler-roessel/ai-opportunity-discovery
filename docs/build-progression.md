@@ -14,6 +14,19 @@ The system was not designed as full automation on day one. It moved through five
 
 After those five stages stabilized, the workflow could be automated end-to-end because the human review decisions had been converted into system logic.
 
+## Origin: Reversing The Job Search Workflow
+
+Before this became a client-discovery system, the underlying idea came from a forked job-search workflow. The earlier workflow scanned companies hiring for roles I might personally apply to and turned those listings into a manual-review shortlist.
+
+The useful realization was that the same hiring signal had two sides:
+
+- as a candidate, it surfaced companies worth applying to
+- as a recruiting operator, it surfaced companies that might need hiring help
+
+That reversed the original purpose of the scanner. Instead of only asking whether a company was worth applying to, the new workflow asked whether the company's hiring activity made it a potential client. The source registry, title filtering, dedupe/history, batch scanning, and manual-review shortlist became reusable architecture. The later workflow added enrichment, scoring, drafting, review gates, and CRM handoff on top of that reversed job-search foundation.
+
+This is also why the automation style is intentionally governed. The system can automate the repeatable work, but it still preserves review states because the goal is not blind execution. The goal is to convert hiring signals into reviewed commercial opportunities.
+
 ## Stage 1: Discovery And Intake
 
 Early versions tested whether AI and source-specific scrapers could find plausible companies at all. The useful lesson was that generic sourcing creates too much noise. The architecture moved toward source-aware vertical discovery:
@@ -89,4 +102,3 @@ Human realization: automation should happen at the handoff only after record qua
 The final operating state was not "skip humans." It was "automate the repeatable work after human judgment has been encoded." The stable workflow could run the five-stage progression with AI handling discovery assistance, enrichment, scoring, drafting, routing, and CRM payload preparation while preserving approval gates for high-risk decisions.
 
 That progression is the main public proof point: sandbox output became reviewed output, reviewed output became rubrics, rubrics became validation gates, and validation gates enabled full AI automation.
-

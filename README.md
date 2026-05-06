@@ -52,6 +52,14 @@ As the system matured, these manual checks became encoded gates. The public vers
 
 This system started before direct MCP-style CRM access was installed in my local workflow. I manually coded the review-to-CRM handoff first, then used that implementation as the contract for later AI-assisted automation.
 
+## From Job Search Tooling To Client Discovery
+
+One important implementation path came from forking a job-search workflow, reversing its purpose, and adding business-development automation on top. The original scanner looked for companies hiring for roles I might personally apply to. I realized the same signal had a second commercial use: companies hiring for those roles were also potential clients for my current recruiting contract work.
+
+That changed the system design. Instead of treating hiring data only as a personal application pipeline, I reused the source registry, filtering, dedupe/history, and manual-review patterns as a client-discovery engine. The workflow was not "fully automated" in the sense of blindly acting on every result. It was operator-governed automation: the system could discover, enrich, score, draft, and prepare CRM handoff at scale, while review gates controlled which records moved forward.
+
+The later business workflow took the useful parts of the forked job-search scanner and reversed the objective: instead of asking "should I apply to this company?" it asked "does this company have a live hiring signal that makes it a potential client?" From there, I added enrichment, scoring, drafting, review gates, and CRM handoff automation.
+
 ## Architecture And Data Flow
 
 ```text
