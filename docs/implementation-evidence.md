@@ -12,6 +12,7 @@ The private repo contained a canonical source-aware workflow with:
 - Stage 3 enrichment and scoring
 - Stage 4 draft generation
 - Stage 5 CRM handoff documentation
+- reusable agent-style context, scraping, enrichment, drafting, and handoff skills
 - workflow constants for stage, draft status, and sync status
 - tests around field transformation and Stage 5 readiness
 
@@ -29,6 +30,7 @@ The public code and docs preserve these real patterns:
 - domain-first dedupe with exact-name fallback only when domain is missing
 - rejection taxonomy for hard rejects, source artifacts, relevance misses, and target-fit defers
 - separate failure counters for scrape, AI, write, and sync failures
+- draft-only email preparation before approval
 - protected approved drafts
 - preserved review-needed status on draft reruns
 - Stage 5 gate requiring approved status before CRM payload creation

@@ -1,0 +1,24 @@
+{
+  "context_intake": {
+    "input": ["raw_company_name", "source_url", "notes"],
+    "output": ["company_name", "website", "source_name", "identity_risks", "needs_human_review"]
+  },
+  "source_scraping": {
+    "input": ["source_registry_entry", "query_context"],
+    "output": ["discovery_source", "discovery_source_type", "posting_url", "active_job_postings"]
+  },
+  "enrichment": {
+    "input": ["identity_confirmed_record", "website", "source_evidence"],
+    "output": ["company_summary", "icp_status", "priority_score", "signal_reasoning", "claims_used", "source_urls_used"]
+  },
+  "email_draft_preparation": {
+    "input": ["enriched_record", "claims_used", "source_urls_used"],
+    "output": ["subject_line_1", "subject_line_2", "email_draft", "draft_status"]
+  },
+  "handoff_validation": {
+    "input": ["draft_ready_record"],
+    "required_gate": ["stage=draft_ready", "draft_status=Approved", "crm_sync_status=Not Ready"],
+    "output": ["crm_payload", "sync_status_update"]
+  }
+}
+
