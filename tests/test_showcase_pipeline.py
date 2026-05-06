@@ -4,6 +4,79 @@ from src.showcase.pipeline import run_demo
 from src.showcase.states import CRM_NOT_READY, DRAFT_APPROVED, STAGE_DRAFT_READY
 
 
+def test_terminal_parameters_map_to_source_client_request():
+    from src.showcase.integration_flow import build_source_request
+
+    request = build_source_request(
+        vertical="AI",
+        source_provider="firecrawl",
+        query="agent infrastructure hiring",
+        limit=25,
+    )
+
+    assert request == {
+        "provider": "firecrawl",
+        "vertical": "AI",
+        "query": "agent infrastructure hiring",
+        "limit": 25,
+        "mode": "dry_run",
+    }
+
+
+def test_raw_source_result_maps_to_review_table_record():
+    from src.showcase.integration_flow import map_source_result_to_review_record
+
+    record = map_source_result_to_review_record(
+        {
+            "name": "Northstar Agents",
+            "url": "https://example-northstar-agents.test",
+            "source_url": "https://jobs.example.test/northstar-agents/platform-engineer",
+            "job_title": "Platform Engineer",
+            "snippet": "Hiring for agent runtime infrastructure",
+        },
+        vertical="AI",
+        discovery_source="firecrawl_search",
+    )
+
+    assert record["company_name"] == "Northstar Agents"
+    assert record["website"] == "https://example-northstar-agents.test"
+    assert record["stage"] == "discovered"
+    assert record["discovery_source"] == "firecrawl_search"
+    assert record["active_job_postings"][0]["title"] == "Platform Engineer"
+    assert record["needs_human_review"] is True
+
+
+def test_approved_record_maps_to_generic_crm_payloads():
+    from src.showcase.crm_adapters import build_crm_payload
+
+    record = {
+        "company_name": "WorkflowHarbor",
+        "website": "https://example-workflowharbor.test",
+        "stage": STAGE_DRAFT_READY,
+        "draft_status": DRAFT_APPROVED,
+        "crm_sync_status": CRM_NOT_READY,
+        "vertical": "SaaS",
+        "company_summary": "Workflow automation platform.",
+        "icp_status": "target",
+        "priority_score": 82,
+        "priority_tier": "Fire",
+        "subject_line_1": "WorkflowHarbor hiring",
+        "email_draft": "Public-safe demo draft",
+        "source_urls_used": "https://example-workflowharbor.test/careers",
+    }
+
+    attio = build_crm_payload(record, crm="attio")
+    salesforce = build_crm_payload(record, crm="salesforce")
+    hubspot = build_crm_payload(record, crm="hubspot")
+
+    assert attio["object"] == "companies"
+    assert attio["fields"]["name"] == "WorkflowHarbor"
+    assert salesforce["object"] == "Account"
+    assert salesforce["fields"]["Name"] == "WorkflowHarbor"
+    assert hubspot["object"] == "companies"
+    assert hubspot["properties"]["name"] == "WorkflowHarbor"
+
+
 def test_stage1_passes_plausible_source_aware_ai_record():
     record = {
         "company_name": "Northstar Agents",
@@ -65,4 +138,3 @@ def test_demo_runs_all_five_stages():
         "Stage 4",
         "Stage 5",
     ]
-

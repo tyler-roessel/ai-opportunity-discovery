@@ -84,10 +84,13 @@ This is the automation style: reusable AI-assisted capabilities connected by sta
 ## Architecture And Data Flow
 
 ```text
-Vertical sources
+Terminal run parameters
     |
     v
-Stage 1 discovery scripts
+Source provider request
+    |
+    v
+Source results
     |
     v
 Review/state table
@@ -110,15 +113,26 @@ CRM handoff payload
 
 The private workflow used Airtable as the review/state layer, Attio as the downstream CRM layer, n8n-style workflow orchestration for handoff automation, and Python orchestration scripts for discovery, enrichment, scoring, drafting, and sync payload shaping. This public mirror preserves that architecture with fake schemas and placeholder integration values.
 
+For code review, the important mapping is intentionally small:
+
+- `src/showcase/integration_flow.py` shows terminal-style parameters -> source-provider request -> review-table records.
+- `src/showcase/pipeline.py` shows review-table records moving through Stages 1-5.
+- `src/showcase/crm_handoff.py` shows the Stage 5 approval gate.
+- `src/showcase/crm_adapters.py` shows the same approved record mapped to Attio, Salesforce, or HubSpot-style payloads.
+
+The point is not that the public repo connects to live Firecrawl, Airtable, Attio, Salesforce, or HubSpot. It shows the interfaces and state transitions that make those integrations sane.
+
 ## Real Artifacts Preserved
 
 - Five-stage workflow shape and stage names.
 - Dry-run/live operator boundary.
+- Terminal parameters mapped into source-provider requests.
+- Source-provider results mapped into review-table records.
 - Domain-first dedupe principle with name fallback.
 - Stage 1 rejection taxonomy.
 - Evidence contract across stages.
 - Draft quality rubric and no-invention constraint.
-- Stage 5 CRM handoff gate.
+- Stage 5 CRM handoff gate and generic CRM payload adapters.
 - Result summary patterns: fetched, skipped, enriched/drafted, failures, and errors.
 - Representative CLI and orchestration code.
 

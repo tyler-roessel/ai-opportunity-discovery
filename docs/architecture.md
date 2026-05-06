@@ -15,6 +15,9 @@ This public architecture is generalized from the private implementation. It keep
 ## Data Flow
 
 ```text
+Terminal run parameters
+  -> source-provider request
+  -> source results
 Stage 1: source-aware discovery
   -> Review table: discovered
 Stage 2: identity review
@@ -26,6 +29,21 @@ Stage 4: drafting
 Stage 5: approval and CRM handoff
   -> CRM: synced_to_crm
 ```
+
+## Code Review Path
+
+The public code is intentionally small enough to inspect quickly:
+
+- `src/showcase/integration_flow.py`
+  Maps terminal-style run parameters into a source request, then maps Firecrawl/search/job-source style results into review-table records.
+- `src/showcase/pipeline.py`
+  Moves fake records through the five-stage state machine.
+- `src/showcase/crm_handoff.py`
+  Enforces the Stage 5 approval gate before a payload can be built.
+- `src/showcase/crm_adapters.py`
+  Converts the same approved record into Attio, Salesforce, or HubSpot-style payloads.
+
+This is the core interface design. The public repo does not need live provider credentials to show whether the architecture makes sense.
 
 ## Key Design Decisions
 
@@ -65,4 +83,3 @@ Every stage should emit:
 4. enough structured output for the next stage
 
 This is the central architecture lesson. The AI became reliable when each stage stopped forcing the next stage to infer from thin prose.
-

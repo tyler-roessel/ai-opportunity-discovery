@@ -15,6 +15,9 @@ The private repo contained a canonical source-aware workflow with:
 - reusable agent-style context, scraping, enrichment, drafting, and handoff skills
 - job-search scanner patterns reversed into client-discovery logic
 - review queue, structured logging, reporting, and secret-safe handoff patterns from adjacent systems
+- terminal parameters mapped into source-provider requests
+- Firecrawl/search-style results mapped into review-table records
+- generic CRM adapters for Attio, Salesforce, and HubSpot-style payloads
 - workflow constants for stage, draft status, and sync status
 - tests around field transformation and Stage 5 readiness
 
