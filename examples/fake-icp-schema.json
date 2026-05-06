@@ -1,0 +1,34 @@
+{
+  "schema_version": "public-demo-1",
+  "tables": {
+    "companies": {
+      "description": "Review/state layer for the five-stage workflow.",
+      "fields": [
+        {"name": "Company Name", "type": "text", "required": true},
+        {"name": "Website", "type": "url", "required": true},
+        {"name": "Vertical", "type": "single_select", "options": ["AI", "FinTech", "SaaS", "Blockchain"]},
+        {"name": "Stage", "type": "single_select", "options": ["discovered", "identity_confirmed", "needs_review", "rejected", "enriched", "draft_ready", "synced_to_crm"]},
+        {"name": "Discovery Source", "type": "text"},
+        {"name": "Posting URL", "type": "url"},
+        {"name": "LinkedIn Company URL", "type": "url"},
+        {"name": "Active Job Postings", "type": "long_text"},
+        {"name": "Identity Confidence", "type": "single_select", "options": ["HIGH", "MEDIUM", "LOW"]},
+        {"name": "Company Summary", "type": "long_text"},
+        {"name": "What They Do", "type": "long_text"},
+        {"name": "ICP Status", "type": "single_select", "options": ["target", "potential", "research", "not_fit"]},
+        {"name": "Priority Score", "type": "number"},
+        {"name": "Priority Tier", "type": "single_select", "options": ["Fire", "Warm", "Nurture"]},
+        {"name": "Signal Reasoning", "type": "long_text"},
+        {"name": "Claims Used", "type": "long_text"},
+        {"name": "Source URLs Used", "type": "long_text"},
+        {"name": "Subject Line 1", "type": "text"},
+        {"name": "Subject Line 2", "type": "text"},
+        {"name": "Email Draft", "type": "long_text"},
+        {"name": "Draft Status", "type": "single_select", "options": ["Not Started", "Draft Ready", "Needs Review", "Rejected", "Approved"]},
+        {"name": "CRM Sync Status", "type": "single_select", "options": ["Not Ready", "Synced", "Synced Error"]},
+        {"name": "Reviewer Notes", "type": "long_text"}
+      ]
+    }
+  }
+}
+

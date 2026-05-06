@@ -1,0 +1,51 @@
+[
+  {
+    "company_name": "Northstar Agents",
+    "website": "https://example-northstar-agents.test",
+    "vertical": "AI",
+    "stage": "discovered",
+    "discovery_source": "portfolio_job_board",
+    "posting_url": "https://jobs.example.test/northstar-agents/platform-engineer",
+    "active_job_postings": [
+      {
+        "title": "Platform Engineer",
+        "department": "Engineering",
+        "source_url": "https://jobs.example.test/northstar-agents/platform-engineer",
+        "posting_context": "Hiring for agent runtime infrastructure"
+      }
+    ],
+    "stage1_filter_decision": "passed",
+    "stage1_filter_reason": "AI infrastructure signal in role and source context",
+    "needs_human_review": true
+  },
+  {
+    "company_name": "LedgerBridge",
+    "website": "https://example-ledgerbridge.test",
+    "vertical": "FinTech",
+    "stage": "identity_confirmed",
+    "identity_confidence": "HIGH",
+    "identity_reasoning": "Website, posting domain, and company profile align",
+    "discovery_source": "curated_linkedin_search",
+    "posting_url": "https://jobs.example.test/ledgerbridge/risk-platform-lead"
+  },
+  {
+    "company_name": "WorkflowHarbor",
+    "website": "https://example-workflowharbor.test",
+    "vertical": "SaaS",
+    "stage": "draft_ready",
+    "draft_status": "Approved",
+    "crm_sync_status": "Not Ready",
+    "company_summary": "WorkflowHarbor builds workflow tooling for mid-market operations teams.",
+    "what_they_do": "Automates customer onboarding and handoffs across support, implementation, and account teams.",
+    "icp_status": "target",
+    "priority_score": 82,
+    "priority_tier": "Fire",
+    "signal_reasoning": "Multiple implementation and platform roles suggest product and customer delivery pressure.",
+    "claims_used": "Hiring for platform and implementation roles; product described as onboarding workflow automation.",
+    "source_urls_used": "https://example-workflowharbor.test/careers\nhttps://example-workflowharbor.test/product",
+    "subject_line_1": "WorkflowHarbor platform hiring",
+    "subject_line_2": "Implementation team growth",
+    "email_draft": "Hi team,\n\nNoticed WorkflowHarbor is hiring across platform and implementation roles while expanding onboarding workflow automation. That usually creates pressure around technical hiring and customer-delivery roles at the same time.\n\nOpen to a quick note on where specialized recruiting support could help?\n\nBest,"
+  }
+]
+

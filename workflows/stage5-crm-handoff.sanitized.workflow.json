@@ -1,0 +1,81 @@
+{
+  "name": "Stage 5 CRM Handoff - Sanitized Public Example",
+  "nodes": [
+    {
+      "id": "review-table-trigger",
+      "name": "Approved Draft Trigger",
+      "type": "reviewTableTrigger",
+      "parameters": {
+        "table": "Companies",
+        "filter": "Stage = draft_ready AND Draft Status = Approved AND CRM Sync Status = Not Ready"
+      }
+    },
+    {
+      "id": "validate-payload",
+      "name": "Validate Required Fields",
+      "type": "function",
+      "parameters": {
+        "requiredFields": [
+          "Company Name",
+          "Website",
+          "Company Summary",
+          "ICP Status",
+          "Priority Score",
+          "Subject Line 1",
+          "Email Draft",
+          "Source URLs Used"
+        ]
+      }
+    },
+    {
+      "id": "crm-upsert",
+      "name": "Upsert CRM Company",
+      "type": "crmApi",
+      "parameters": {
+        "endpoint": "https://crm.example.test/v2/objects/companies",
+        "method": "POST",
+        "auth": "{{CRM_API_TOKEN_PLACEHOLDER}}",
+        "payload": {
+          "name": "={{Company Name}}",
+          "website": "={{Website}}",
+          "vertical": "={{Vertical}}",
+          "priority_score": "={{Priority Score}}",
+          "approved_draft": "={{Email Draft}}",
+          "source_urls_used": "={{Source URLs Used}}"
+        }
+      }
+    },
+    {
+      "id": "mark-synced",
+      "name": "Mark Review Record Synced",
+      "type": "reviewTableUpdate",
+      "parameters": {
+        "stage": "synced_to_crm",
+        "crm_sync_status": "Synced",
+        "crm_record_url": "={{crm-upsert.url}}"
+      }
+    },
+    {
+      "id": "mark-sync-error",
+      "name": "Mark Retryable Sync Error",
+      "type": "reviewTableUpdate",
+      "parameters": {
+        "crm_sync_status": "Synced Error",
+        "crm_sync_error": "={{error.message}}"
+      }
+    }
+  ],
+  "connections": {
+    "Approved Draft Trigger": ["Validate Required Fields"],
+    "Validate Required Fields": ["Upsert CRM Company"],
+    "Upsert CRM Company": ["Mark Review Record Synced"],
+    "Upsert CRM Company:error": ["Mark Retryable Sync Error"]
+  },
+  "sanitization": {
+    "webhooks": "removed",
+    "credentials": "replaced_with_placeholders",
+    "field_ids": "replaced_with_readable_demo_names",
+    "record_data": "fake_examples_only"
+  }
+}
+

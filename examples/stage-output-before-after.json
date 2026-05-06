@@ -1,0 +1,32 @@
+{
+  "before_human_review": {
+    "company_name": "Acme AI",
+    "website": "",
+    "stage": "discovered",
+    "stage1_filter_decision": "passed",
+    "stage1_filter_reason": "AI keyword appeared in role title",
+    "risk": "Ambiguous short name and missing canonical website"
+  },
+  "human_review_feedback": {
+    "identity_status": "needs_review",
+    "identity_confidence": "LOW",
+    "identity_reasoning": "Role source did not confirm the canonical company domain",
+    "reviewer_note": "Do not enrich until website and company profile match"
+  },
+  "encoded_system_rule": {
+    "rule": "Identity confirmation must preserve canonical name, website, domain, and supporting evidence before Stage 3 enrichment.",
+    "result": "Later stages no longer infer identity from a loose company name alone."
+  },
+  "after_rule": {
+    "company_name": "Northstar Agents",
+    "canonical_website": "https://example-northstar-agents.test",
+    "stage": "identity_confirmed",
+    "identity_confidence": "HIGH",
+    "identity_evidence": [
+      "posting source domain matches company website",
+      "company profile matches website product description",
+      "role title aligns with vertical"
+    ]
+  }
+}
+
