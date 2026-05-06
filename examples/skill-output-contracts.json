@@ -1,24 +1,82 @@
 {
-  "context_intake": {
-    "input": ["raw_company_name", "source_url", "notes"],
-    "output": ["company_name", "website", "source_name", "identity_risks", "needs_human_review"]
+  "source_registry": {
+    "input": ["vertical", "source_type", "query_context"],
+    "output": ["source_id", "source_type", "vertical", "parser", "active"]
   },
   "source_scraping": {
     "input": ["source_registry_entry", "query_context"],
-    "output": ["discovery_source", "discovery_source_type", "posting_url", "active_job_postings"]
+    "output": ["discovery_source", "discovery_source_type", "posting_url", "active_job_postings", "source_urls_used"]
+  },
+  "job_search_reversal": {
+    "input": ["job_search_match", "title_filter", "company_context"],
+    "original_question": "should_i_apply_to_this_company",
+    "reversed_question": "does_this_hiring_signal_indicate_potential_client_demand",
+    "output": ["client_discovery_candidate", "hiring_signal", "review_reason"]
+  },
+  "context_intake": {
+    "input": ["raw_company_name", "source_url", "notes", "scraped_snippet"],
+    "output": ["company_name", "website", "source_name", "identity_risks", "needs_human_review"]
+  },
+  "dedupe_history": {
+    "input": ["company_name", "website", "domain", "scan_history"],
+    "output": ["dedupe_key", "is_duplicate", "match_reason", "preserve_source_provenance"]
+  },
+  "identity_review_assist": {
+    "input": ["discovered_record", "source_evidence"],
+    "output": ["identity_status", "identity_confidence", "canonical_company_name", "canonical_domain", "identity_reasoning"]
+  },
+  "review_queue_routing": {
+    "input": ["record", "stage", "risk_flags"],
+    "output": ["next_review_state", "review_reason", "required_human_action"]
+  },
+  "evidence_contract": {
+    "input": ["stage_decision", "source_evidence", "confidence"],
+    "output": ["decision", "evidence_used", "confidence", "ambiguity_markers", "source_urls_used"]
   },
   "enrichment": {
     "input": ["identity_confirmed_record", "website", "source_evidence"],
-    "output": ["company_summary", "icp_status", "priority_score", "signal_reasoning", "claims_used", "source_urls_used"]
+    "output": ["company_summary", "what_they_do", "icp_status", "priority_score", "signal_reasoning", "claims_used", "source_urls_used"]
+  },
+  "scoring_prioritization": {
+    "input": ["enriched_record", "signal_evidence", "fit_rules"],
+    "output": ["icp_status", "priority_score", "priority_tier", "score_drivers", "score_risks"]
   },
   "email_draft_preparation": {
     "input": ["enriched_record", "claims_used", "source_urls_used"],
-    "output": ["subject_line_1", "subject_line_2", "email_draft", "draft_status"]
+    "output": ["subject_line_1", "subject_line_2", "email_draft", "draft_status", "draft_risks"]
+  },
+  "draft_quality_review": {
+    "input": ["email_draft", "claims_used", "source_urls_used"],
+    "output": ["is_sendable", "draft_status", "review_issues"]
   },
   "handoff_validation": {
     "input": ["draft_ready_record"],
     "required_gate": ["stage=draft_ready", "draft_status=Approved", "crm_sync_status=Not Ready"],
     "output": ["crm_payload", "sync_status_update"]
+  },
+  "sync_reconciliation": {
+    "input": ["review_table_records", "crm_records"],
+    "output": ["eligible_for_sync", "held_not_approved", "retryable_sync_errors", "mode"]
+  },
+  "structured_logging": {
+    "input": ["run_id", "event_type", "decision", "outcome"],
+    "output": ["audit_event", "secret_values_logged=false"]
+  },
+  "reporting_digest": {
+    "input": ["stage_summaries", "errors", "review_queue_counts"],
+    "output": ["operator_summary", "exceptions", "recommended_next_actions"]
+  },
+  "context_filing": {
+    "input": ["review_note", "lesson", "rule_change"],
+    "output": ["destination_doc", "updated_contract", "next_run_instruction"]
+  },
+  "secret_safe_handoff": {
+    "input": ["setup_context", "integration_requirements"],
+    "output": ["sanitized_handoff", "present_missing_secret_status", "placeholders_only"]
+  },
+  "control_surface": {
+    "input": ["operator_command", "current_state"],
+    "output": ["dry_run_preview", "queued_action", "approval_required"]
   }
 }
 

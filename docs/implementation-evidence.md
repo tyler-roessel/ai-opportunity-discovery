@@ -13,6 +13,8 @@ The private repo contained a canonical source-aware workflow with:
 - Stage 4 draft generation
 - Stage 5 CRM handoff documentation
 - reusable agent-style context, scraping, enrichment, drafting, and handoff skills
+- job-search scanner patterns reversed into client-discovery logic
+- review queue, structured logging, reporting, and secret-safe handoff patterns from adjacent systems
 - workflow constants for stage, draft status, and sync status
 - tests around field transformation and Stage 5 readiness
 
@@ -24,6 +26,11 @@ The public code and docs preserve these real patterns:
 
 - forked and reversed job-search scanning patterns for client discovery
 - source registry and title-filter concepts adapted from a manual-review job-search funnel
+- review queues that separate "AI can prepare" from "human approved"
+- structured logs for decisions, action attempts, and review outcomes
+- report packets that summarize exceptions and next actions
+- context-filing loops that turn review lessons into durable docs and rules
+- secret-safe handoff packets that report presence/missing state without exposing values
 - `--dry-run` before live execution
 - small live run limits before broad runs
 - targeted reruns by company or record ID

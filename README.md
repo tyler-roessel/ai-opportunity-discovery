@@ -11,7 +11,7 @@ The important story is not "AI found some leads." The system started as sandboxe
 - Source-aware discovery with provenance carried into later stages.
 - Review gates that prevent weak records or speculative drafts from moving downstream.
 - CRM handoff logic that syncs only approved, traceable records.
-- Reusable agent-style skills for context intake, scraping, enrichment, email draft preparation, and handoff validation.
+- Reusable agent-style capabilities for source registries, scraping, context intake, dedupe/history, review queues, enrichment, scoring, draft preparation, CRM handoff, reporting, context filing, and secret-safe handoffs.
 - Sanitized implementation patterns from the private operating repo.
 
 ## The Five-Stage Workflow
@@ -61,19 +61,25 @@ That changed the system design. Instead of treating hiring data only as a person
 
 The later business workflow took the useful parts of the forked job-search scanner and reversed the objective: instead of asking "should I apply to this company?" it asked "does this company have a live hiring signal that makes it a potential client?" From there, I added enrichment, scoring, drafting, review gates, and CRM handoff automation.
 
-## Reusable Skills Built Around The Workflow
+## Reusable Capabilities Built Around The Workflow
 
-The system was also built as a set of reusable skills rather than one monolithic script. Each skill had a narrow job, a defined input/output shape, and a review boundary:
+The system was also built as a set of reusable capabilities rather than one monolithic script. Each capability had a narrow job, a defined input/output shape, and a review boundary:
 
-| Skill | What it did | Safety boundary |
+| Capability | What it did | Safety boundary |
 |---|---|---|
+| Source registry | Defined approved sources, source types, query context, and parser expectations. | Prevented random scraping from becoming the system. |
 | Context intake | Took messy company/source context and normalized it into a reviewable record. | Preserved source URLs and ambiguity instead of pretending thin context was complete. |
 | Source scraping | Pulled company and hiring signals from public pages, job boards, and source registries. | Kept provenance so later stages could trace where claims came from. |
+| Dedupe/history | Prevented repeated records while preserving source provenance. | Used domain-first dedupe and avoided over-collapsing ambiguous companies. |
+| Review queue routing | Moved records through explicit human-review states. | Ambiguous records stayed in review instead of moving downstream. |
 | Lead enrichment | Added company summaries, fit signals, confidence, and priority scoring. | Ran after identity review so enrichment did not amplify bad records. |
+| Scoring and prioritization | Converted evidence into priority tiers and score reasoning. | Scores had to explain why a record should move forward. |
 | Email draft preparation | Produced evidence-grounded subject lines and draft copy from approved context. | Draft-only; human approval stayed required before CRM handoff or sending. |
 | CRM handoff validation | Built a minimal downstream payload only after the record passed Stage 5 gates. | Synced only approved, draft-ready records and kept failed syncs retryable. |
+| Reporting and context filing | Turned run outputs and review lessons into operator summaries and updated rules. | Reports focused on decisions, exceptions, and next actions, not raw sensitive data. |
+| Secret-safe handoff | Produced setup/review packets with placeholders and present/missing status only. | No keys, tokens, live field IDs, or webhook URLs were exposed. |
 
-This is the automation style: reusable AI-assisted skills connected by state and review gates. Some parts can run automatically, but the system is still governed by explicit approval states.
+This is the automation style: reusable AI-assisted capabilities connected by state and review gates. Some parts can run automatically, but the system is still governed by explicit approval states.
 
 ## Architecture And Data Flow
 
@@ -145,7 +151,7 @@ The strongest signal is the progression: human judgment became rubrics and contr
 - `docs/how-ai-was-taught.md` - the feedback loop that turned review decisions into AI behavior.
 - `docs/architecture.md` - system architecture and ownership boundaries.
 - `docs/implementation-evidence.md` - source-derived implementation evidence preserved in public-safe form.
-- `docs/reusable-skills.md` - context, scraping, enrichment, drafting, and handoff skills.
+- `docs/reusable-skills.md` - expanded capability catalog for discovery, review, enrichment, drafting, handoff, reporting, and safety skills.
 - `docs/sanitization-notes.md` - what was preserved, generalized, or removed.
 - `examples/` - fake schemas, sample records, and before/after stage outputs.
 - `workflows/` - sanitized workflow export showing Stage 5 handoff shape.
