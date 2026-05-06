@@ -77,6 +77,35 @@ def test_approved_record_maps_to_generic_crm_payloads():
     assert hubspot["properties"]["name"] == "WorkflowHarbor"
 
 
+def test_approved_record_maps_to_mcp_tool_call():
+    from src.showcase.mcp_adapter import build_mcp_tool_call
+
+    record = {
+        "company_name": "WorkflowHarbor",
+        "website": "https://example-workflowharbor.test",
+        "stage": STAGE_DRAFT_READY,
+        "draft_status": DRAFT_APPROVED,
+        "crm_sync_status": CRM_NOT_READY,
+        "vertical": "SaaS",
+        "company_summary": "Workflow automation platform.",
+        "icp_status": "target",
+        "priority_score": 82,
+        "priority_tier": "Fire",
+        "subject_line_1": "WorkflowHarbor hiring",
+        "email_draft": "Public-safe demo draft",
+        "source_urls_used": "https://example-workflowharbor.test/careers",
+    }
+
+    call = build_mcp_tool_call(record, server="crm", tool="upsert_company")
+
+    assert call["transport"] == "mcp"
+    assert call["server"] == "crm"
+    assert call["tool"] == "upsert_company"
+    assert call["arguments"]["name"] == "WorkflowHarbor"
+    assert call["approval_gate"]["stage"] == STAGE_DRAFT_READY
+    assert call["approval_gate"]["draft_status"] == DRAFT_APPROVED
+
+
 def test_stage1_passes_plausible_source_aware_ai_record():
     record = {
         "company_name": "Northstar Agents",

@@ -54,6 +54,11 @@
     "required_gate": ["stage=draft_ready", "draft_status=Approved", "crm_sync_status=Not Ready"],
     "output": ["crm_payload", "sync_status_update"]
   },
+  "mcp_tool_call_wrapping": {
+    "input": ["approved_stage5_record", "server", "tool"],
+    "required_gate": ["stage=draft_ready", "draft_status=Approved", "crm_sync_status=Not Ready"],
+    "output": ["transport=mcp", "server", "tool", "arguments", "approval_gate", "mode=preview"]
+  },
   "sync_reconciliation": {
     "input": ["review_table_records", "crm_records"],
     "output": ["eligible_for_sync", "held_not_approved", "retryable_sync_errors", "mode"]
@@ -79,4 +84,3 @@
     "output": ["dry_run_preview", "queued_action", "approval_required"]
   }
 }
-

@@ -42,8 +42,20 @@ The public code is intentionally small enough to inspect quickly:
   Enforces the Stage 5 approval gate before a payload can be built.
 - `src/showcase/crm_adapters.py`
   Converts the same approved record into Attio, Salesforce, or HubSpot-style payloads.
+- `src/showcase/mcp_adapter.py`
+  Wraps the same approved payload in an MCP-style tool-call envelope, keeping the approval gate visible.
 
 This is the core interface design. The public repo does not need live provider credentials to show whether the architecture makes sense.
+
+## MCP Boundary
+
+MCP is treated as an execution surface, not the source of workflow truth. The workflow still decides whether a record is approved. After approval, the record can be expressed as:
+
+- a direct CRM API payload
+- an n8n-style workflow payload
+- an MCP-style tool call
+
+This keeps the important boundary clear: direct connector access should execute an already-reviewed contract, not bypass review states.
 
 ## Key Design Decisions
 

@@ -21,6 +21,7 @@ The first public pass only showed a few of these skills. This expanded catalog i
 | Draft preparation | Produces evidence-grounded subject lines and email drafts. | Claims used, source URLs used, draft angle, draft risk. | Draft-only; no automatic sending. |
 | Draft quality review | Checks whether a generated draft is usable. | No invented urgency, no unsupported claims, preserve approved drafts. | Approved drafts are not overwritten by reruns. |
 | CRM handoff validation | Builds a minimal downstream payload after approval. | Stage 5 gate, minimal payload, retryable sync status. | Sync only approved records; failed syncs stay retryable. |
+| MCP tool-call wrapping | Wraps an approved payload for connector-style execution. | Server, tool name, arguments, approval gate metadata. | MCP does not bypass the Stage 5 gate. |
 | Sync reconciliation | Compares review-state records against downstream system state. | Dry-run reports, queue status, candidate counts. | Preview-first before live writes. |
 | Structured logging | Records decisions and actions in machine-readable form. | Run ID, action type, input summary, decision, outcome, reviewer. | Logs presence/status, not secrets. |
 | Reporting and digesting | Produces operator-ready summaries. | Daily/weekly summaries, exception reports, review packets. | Reports decisions and paths without exposing raw sensitive data. |
@@ -256,6 +257,32 @@ Email Draft is present
 Source URLs Used is present
 ```
 
+## MCP Tool-Call Wrapping
+
+MCP is useful after the workflow contract is defined. In this system, the MCP-style adapter wraps an approved Stage 5 payload as a tool call, but it does not decide whether the record is approved.
+
+Public-safe envelope:
+
+```json
+{
+  "transport": "mcp",
+  "server": "crm",
+  "tool": "upsert_company",
+  "arguments": {
+    "name": "WorkflowHarbor",
+    "website": "https://example-workflowharbor.test"
+  },
+  "approval_gate": {
+    "stage": "draft_ready",
+    "draft_status": "Approved",
+    "crm_sync_status": "Not Ready"
+  },
+  "mode": "preview"
+}
+```
+
+The key design point is that MCP is a transport layer over reviewed state, not a shortcut around reviewed state.
+
 ## Sync Reconciliation
 
 The sync reconciliation skill checks what would move before anything mutates.
@@ -343,4 +370,3 @@ Examples:
 - chat or phone commands that only preview or queue work
 
 The important rule: a convenient control surface is not permission to skip approval states.
-

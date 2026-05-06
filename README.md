@@ -119,8 +119,9 @@ For code review, the important mapping is intentionally small:
 - `src/showcase/pipeline.py` shows review-table records moving through Stages 1-5.
 - `src/showcase/crm_handoff.py` shows the Stage 5 approval gate.
 - `src/showcase/crm_adapters.py` shows the same approved record mapped to Attio, Salesforce, or HubSpot-style payloads.
+- `src/showcase/mcp_adapter.py` shows the same approved record wrapped as an MCP-style tool call.
 
-The point is not that the public repo connects to live Firecrawl, Airtable, Attio, Salesforce, or HubSpot. It shows the interfaces and state transitions that make those integrations sane.
+The point is not that the public repo connects to live Firecrawl, Airtable, Attio, Salesforce, HubSpot, or an MCP server. It shows the interfaces and state transitions that make those integrations sane.
 
 ## Real Artifacts Preserved
 
@@ -132,7 +133,7 @@ The point is not that the public repo connects to live Firecrawl, Airtable, Atti
 - Stage 1 rejection taxonomy.
 - Evidence contract across stages.
 - Draft quality rubric and no-invention constraint.
-- Stage 5 CRM handoff gate and generic CRM payload adapters.
+- Stage 5 CRM handoff gate, generic CRM payload adapters, and MCP-style tool-call envelope.
 - Result summary patterns: fetched, skipped, enriched/drafted, failures, and errors.
 - Representative CLI and orchestration code.
 

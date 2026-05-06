@@ -18,6 +18,7 @@ The private repo contained a canonical source-aware workflow with:
 - terminal parameters mapped into source-provider requests
 - Firecrawl/search-style results mapped into review-table records
 - generic CRM adapters for Attio, Salesforce, and HubSpot-style payloads
+- MCP-style tool-call envelope for approved records
 - workflow constants for stage, draft status, and sync status
 - tests around field transformation and Stage 5 readiness
 
