@@ -50,6 +50,8 @@ The original operating pattern was intentionally conservative:
 
 As the system matured, these manual checks became encoded gates. The public version keeps those gates because they are the proof of engineering judgment.
 
+This system started before direct MCP-style CRM access was installed in my local workflow. I manually coded the review-to-CRM handoff first, then used that implementation as the contract for later AI-assisted automation.
+
 ## Architecture And Data Flow
 
 ```text
