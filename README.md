@@ -1,6 +1,6 @@
 # AI Opportunity Discovery System - Public Showcase
 
-This repo is a sanitized public mirror of a private AI workflow. It preserves the real architecture, stage progression, orchestration patterns, and implementation lessons while replacing private business data, credentials, schemas, customer/prospect details, raw prompts, and live integration identifiers with safe examples.
+This repo is a public reference version of a private AI workflow. It preserves the real architecture, stage progression, orchestration patterns, and implementation lessons while using synthetic examples instead of private business data, credentials, schemas, customer/prospect details, raw prompts, or live integration identifiers.
 
 The important story is not "AI found some leads." The system started as sandboxed AI experiments, moved through human-reviewed stages, converted review feedback into rubrics and guardrails, and then moved into full AI automation once the five-stage workflow was reliable.
 
@@ -12,7 +12,7 @@ The important story is not "AI found some leads." The system started as sandboxe
 - Review gates that prevent weak records or speculative drafts from moving downstream.
 - CRM handoff logic that syncs only approved, traceable records.
 - Reusable agent-style capabilities for source registries, scraping, context intake, dedupe/history, review queues, enrichment, scoring, draft preparation, CRM handoff, reporting, context filing, and secret-safe handoffs.
-- Sanitized implementation patterns from the private operating repo.
+- Implementation patterns from the private operating repo.
 
 ## The Five-Stage Workflow
 
@@ -137,7 +137,7 @@ The point is not that the public repo connects to live Firecrawl, Airtable, Atti
 - Result summary patterns: fetched, skipped, enriched/drafted, failures, and errors.
 - Representative CLI and orchestration code.
 
-## What Was Sanitized
+## What Was Removed For The Public Version
 
 - Real company/prospect/customer data.
 - Live Airtable base/table/field IDs.
@@ -149,14 +149,14 @@ The point is not that the public repo connects to live Firecrawl, Airtable, Atti
 
 ## How A CTO/Engineer Should Review This Sample
 
-Review this as a public-safe architecture and implementation sample, not a plug-and-play product. The useful questions are:
+Review this as an architecture and implementation sample, not a plug-and-play product. The useful questions are:
 
 - Does the workflow preserve state and provenance across stages?
 - Are risky transitions gated by review or validation?
 - Are dry-run/live boundaries explicit?
 - Are generated drafts traceable to evidence?
 - Is the CRM handoff minimal and approval-driven?
-- Is the sanitized repo honest about what was preserved and what was removed?
+- Is the public repo honest about what was preserved and what was removed?
 
 The strongest signal is the progression: human judgment became rubrics and contracts, then those contracts became automation.
 
@@ -165,12 +165,12 @@ The strongest signal is the progression: human judgment became rubrics and contr
 - `docs/build-progression.md` - how the five-stage workflow moved from sandbox to full automation.
 - `docs/how-ai-was-taught.md` - the feedback loop that turned review decisions into AI behavior.
 - `docs/architecture.md` - system architecture and ownership boundaries.
-- `docs/implementation-evidence.md` - source-derived implementation evidence preserved in public-safe form.
+- `docs/implementation-evidence.md` - source-derived implementation evidence preserved for public review.
 - `docs/reusable-skills.md` - expanded capability catalog for discovery, review, enrichment, drafting, handoff, reporting, and safety skills.
 - `docs/sanitization-notes.md` - what was preserved, generalized, or removed.
 - `examples/` - fake schemas, sample records, and before/after stage outputs.
-- `workflows/` - sanitized workflow export showing Stage 5 handoff shape.
-- `src/showcase/` - representative sanitized Python implementation patterns.
+- `workflows/` - workflow export showing Stage 5 handoff shape.
+- `src/showcase/` - representative Python implementation patterns.
 
 ## Safe Local Run
 
