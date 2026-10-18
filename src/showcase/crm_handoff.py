@@ -8,6 +8,7 @@ import math
 from typing import Any
 from urllib.parse import urlparse
 from .identity_review import has_identity_review
+from .filters import DISCOVERY_INPUT_FIELDS
 
 from .states import (
     CRM_NOT_READY,
@@ -33,7 +34,7 @@ REQUIRED_STAGE5_FIELDS = {
 
 def draft_fingerprint(record: dict[str, Any]) -> str:
     """Bind a review decision to its exact draft and supporting context."""
-    fields = REQUIRED_STAGE5_FIELDS | set(CRM_PAYLOAD_FIELD_MAP)
+    fields = REQUIRED_STAGE5_FIELDS | set(CRM_PAYLOAD_FIELD_MAP) | set(DISCOVERY_INPUT_FIELDS)
     content = {field: record.get(field) for field in sorted(fields)}
     return hashlib.sha256(json.dumps(content, sort_keys=True).encode("utf-8")).hexdigest()
 

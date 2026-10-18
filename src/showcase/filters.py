@@ -12,6 +12,11 @@ REASON_SOURCE_ARTIFACT = "source_artifact"
 REASON_VERTICAL_RELEVANCE_MISS = "vertical_relevance_miss"
 REASON_TARGET_FIT_DEFER = "target_fit_defer"
 
+DISCOVERY_INPUT_FIELDS = (
+    "company_name", "website", "posting_url", "vertical", "description",
+    "role_title", "posting_context", "discovery_source", "active_job_postings",
+)
+
 NON_CANONICAL_DOMAINS = {
     "greenhouse.io",
     "jobs.lever.co",

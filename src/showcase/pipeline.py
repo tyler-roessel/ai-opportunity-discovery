@@ -49,13 +49,12 @@ def run_stage1(records: list[dict[str, Any]]) -> dict[str, Any]:
             stage = record.get("stage")
             if stage is not None and not isinstance(stage, str):
                 raise ValueError("stage must be a string")
-            if stage not in (None, STAGE_DISCOVERED) and record.get("stage1_filter_decision") != "error":
-                continue
             decision = evaluate_stage1_record(record)
             record["stage1_filter_decision"] = "passed" if decision.passed else "rejected"
             record["stage1_filter_reason"] = decision.reason
             if decision.passed:
-                record["stage"] = STAGE_DISCOVERED
+                if stage in (None, STAGE_DISCOVERED, STAGE_NEEDS_REVIEW):
+                    record["stage"] = STAGE_DISCOVERED
                 results["passed"] += 1
             else:
                 record["stage"] = STAGE_REJECTED
@@ -113,9 +112,12 @@ def run_stage3(records: list[dict[str, Any]]) -> dict[str, Any]:
             results["validation_failures"] += 1
             results["errors"].append({"company": record.get("company_name", "?"), "error": "identity review or posting collection is invalid"})
             continue
-        postings = [item for item in (raw_postings or []) if isinstance(item, dict)]
+        postings = [
+            item for item in (raw_postings or [])
+            if isinstance(item, dict) and (item.get("source_url") or record.get("posting_url"))
+        ]
         titles = [str(item["title"]) for item in postings if item.get("title")]
-        context = str(record.get("description") or record.get("posting_context") or "").strip()
+        context = str(record.get("description") or (record.get("posting_context") if record.get("posting_url") else "") or "").strip()
         if not context:
             context = "; ".join(str(item["posting_context"]) for item in postings if item.get("posting_context"))
         urls = [str(record[field]) for field in ("posting_url", "website") if record.get(field)]

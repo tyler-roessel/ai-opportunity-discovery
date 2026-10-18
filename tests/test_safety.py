@@ -232,3 +232,32 @@ def test_incomplete_enriched_record_is_held_instead_of_crashing_drafting():
     record.update(stage="enriched", icp_status="candidate")
     assert run_stage4([record])["errors"]
     assert record["stage"] == "needs_review"
+
+
+def test_changed_discovery_inputs_invalidate_draft_approval_and_rerun_filtering():
+    result = run_demo()
+    record = next(item for item in result["records"] if item.get("draft_status") == "Approved")
+    record["description"] = "Recruitment agency"
+    assert not is_stage5_crm_ready(record)
+    run_stage1([record])
+    assert record["stage"] == "rejected"
+
+
+def test_unsourced_posting_claims_are_not_used_for_drafting():
+    record = {
+        "company_name": "Example", "website": "https://example.test", "stage": "identity_confirmed",
+        "active_job_postings": [{"title": "Engineer", "posting_context": "Hiring for agent infrastructure."}],
+    }
+    approve_identity(record, reviewer="fixture-reviewer")
+    run_stage3([record])
+    run_stage4([record])
+    assert "Hiring for agent infrastructure" not in record["claims_used"]
+    assert "email_draft" not in record
+
+
+@pytest.mark.parametrize("status", [[], {}])
+def test_malformed_icp_status_is_held_without_aborting_stage5(status):
+    record = draft()
+    approve_draft(record, reviewer="fixture-reviewer")
+    record["icp_status"] = status
+    assert run_stage5([record])["held"] == 1
