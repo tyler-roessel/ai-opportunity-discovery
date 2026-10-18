@@ -12,10 +12,10 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 from .crm_handoff import build_stage5_crm_payload, is_stage5_crm_ready
 from .filters import evaluate_stage1_record
+from .identity_review import has_identity_review
 from .states import (
     CRM_NOT_READY,
     DRAFT_APPROVED,
@@ -70,17 +70,7 @@ def run_stage2(records: list[dict[str, Any]]) -> dict[str, Any]:
         if record.get("stage") not in {STAGE_DISCOVERED, STAGE_NEEDS_REVIEW}:
             continue
         results["reviewed"] += 1
-        try:
-            website = urlparse(str(record.get("website") or ""))
-            valid_website = website.scheme in {"http", "https"} and bool(website.hostname)
-        except ValueError:
-            valid_website = False
-        if (
-            valid_website
-            and record.get("identity_review_status") == "Approved"
-            and isinstance(record.get("identity_reviewed_by"), str)
-            and record["identity_reviewed_by"].strip()
-        ):
+        if has_identity_review(record):
             record["stage"] = STAGE_IDENTITY_CONFIRMED
             record["identity_confidence"] = "HIGH"
             record["identity_reasoning"] = "Explicit identity review supplied with the input record."
@@ -102,17 +92,26 @@ def run_stage3(records: list[dict[str, Any]]) -> dict[str, Any]:
         "llm_failures": 0,
         "write_failures": 0,
         "errors": [],
+        "validation_failures": 0,
     }
     for record in records:
         if record.get("stage") != STAGE_IDENTITY_CONFIRMED:
             continue
         results["fetched"] += 1
-        postings = [item for item in (record.get("active_job_postings") or []) if isinstance(item, dict)]
+        raw_postings = record.get("active_job_postings")
+        if not has_identity_review(record) or (raw_postings is not None and not isinstance(raw_postings, list)):
+            record["stage"] = STAGE_NEEDS_REVIEW
+            record["needs_human_review"] = True
+            results["validation_failures"] += 1
+            results["errors"].append({"company": record.get("company_name", "?"), "error": "identity review or posting collection is invalid"})
+            continue
+        postings = [item for item in (raw_postings or []) if isinstance(item, dict)]
         titles = [str(item["title"]) for item in postings if item.get("title")]
         context = str(record.get("description") or record.get("posting_context") or "").strip()
         if not context:
             context = "; ".join(str(item["posting_context"]) for item in postings if item.get("posting_context"))
         urls = [str(record[field]) for field in ("posting_url", "website") if record.get(field)]
+        urls.extend(str(item["source_url"]) for item in postings if item.get("source_url"))
         components = {
             "source_context": 30 if context else 0,
             "observed_roles": 30 if titles else 0,
@@ -154,8 +153,8 @@ def run_stage4(records: list[dict[str, Any]]) -> dict[str, Any]:
             continue
         record.update(
             {
-                "subject_line_1": f"{record['company_name']} hiring signal",
-                "subject_line_2": "Quick note on technical hiring",
+                "subject_line_1": f"{record['company_name']} source context",
+                "subject_line_2": "Question about current plans",
                 "email_draft": (
                     f"Hi team,\n\nI found this source context for {record['company_name']}: "
                     f"{record['claims_used']}\n\n"

@@ -7,6 +7,7 @@ import json
 import math
 from typing import Any
 from urllib.parse import urlparse
+from .identity_review import has_identity_review
 
 from .states import (
     CRM_NOT_READY,
@@ -51,6 +52,8 @@ def approve_draft(record: dict[str, Any], *, reviewer: str) -> None:
 
 
 def _has_valid_content(record: dict[str, Any]) -> bool:
+    if not has_identity_review(record):
+        return False
     for field in REQUIRED_STAGE5_FIELDS - {"priority_score"}:
         if not isinstance(record.get(field), str) or not record[field].strip():
             return False

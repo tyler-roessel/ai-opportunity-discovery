@@ -4,16 +4,19 @@ import pytest
 
 from src.showcase.crm_handoff import approve_draft, is_stage5_crm_ready
 from src.showcase.pipeline import run_demo, run_stage1, run_stage2, run_stage3, run_stage4, run_stage5
+from src.showcase.identity_review import approve_identity
 
 
 def draft():
-    return {
+    record = {
         "company_name": "Example", "website": "https://example.test",
         "stage": "draft_ready", "draft_status": "Draft Ready", "crm_sync_status": "Not Ready",
         "company_summary": "Source describes workflow tooling.", "icp_status": "candidate",
         "priority_score": 70, "subject_line_1": "Example source",
         "email_draft": "Source-grounded draft.", "source_urls_used": "https://example.test/careers",
     }
+    approve_identity(record, reviewer="fixture-reviewer")
+    return record
 
 
 def test_stage5_does_not_approve_or_mutate_unreviewed_drafts():
@@ -63,7 +66,7 @@ def test_identity_requires_an_explicit_review_and_can_resume_from_hold():
     record = {"company_name": "Example", "website": "https://example.test", "stage": "discovered"}
     run_stage2([record])
     assert record["stage"] == "needs_review"
-    record.update(identity_review_status="Approved", identity_reviewed_by="fixture-reviewer")
+    approve_identity(record, reviewer="fixture-reviewer")
     run_stage2([record])
     assert record["stage"] == "identity_confirmed"
 
@@ -95,6 +98,8 @@ def test_scoring_uses_available_evidence_and_thin_records_do_not_get_drafts():
         "description": "Builds workflow software.",
         "active_job_postings": [{"title": "Engineer"}],
     }
+    approve_identity(thin, reviewer="fixture-reviewer")
+    approve_identity(rich, reviewer="fixture-reviewer")
     run_stage3([thin, rich])
     assert thin["priority_score"] < rich["priority_score"]
     assert rich["priority_score"] == sum(rich["score_components"].values())
@@ -129,6 +134,7 @@ def test_complete_source_to_review_to_handoff_flow():
         "identity_review_status": "Approved", "identity_reviewed_by": "fixture-reviewer",
         "active_job_postings": [{"title": "Engineer"}], "discovery_source": "fixture",
     }
+    approve_identity(record, reviewer="fixture-reviewer")
     run_stage1([record])
     run_stage2([record])
     run_stage3([record])
@@ -147,3 +153,40 @@ def test_filter_errors_do_not_inherit_identity_approval():
     assert run_stage1([record])["errors"]
     run_stage2([record])
     assert record["stage"] == "needs_review"
+
+
+def test_persisted_confirmed_state_without_review_is_held():
+    record = {"company_name": "Example", "website": "https://example.test", "stage": "identity_confirmed"}
+    assert run_stage3([record])["validation_failures"] == 1
+    assert record["stage"] == "needs_review"
+
+
+def test_changed_identity_invalidates_the_review():
+    record = draft()
+    record.update(stage="discovered", website="https://changed.test")
+    run_stage2([record])
+    assert record["stage"] == "needs_review"
+
+
+def test_per_posting_evidence_retains_its_source_and_uses_neutral_subjects():
+    record = {
+        "company_name": "Example", "website": "https://example.test", "stage": "identity_confirmed",
+        "discovery_source": "fixture", "active_job_postings": [
+            {"title": "Engineer", "posting_context": "Build agent software.", "source_url": "https://jobs.test/one"},
+        ],
+    }
+    approve_identity(record, reviewer="fixture-reviewer")
+    run_stage3([record])
+    assert "https://jobs.test/one" in record["source_urls_used"]
+    run_stage4([record])
+    assert "hiring signal" not in record["subject_line_1"]
+
+
+def test_malformed_postings_are_held_without_aborting_other_records():
+    bad = {"company_name": "Bad", "website": "https://bad.test", "stage": "identity_confirmed", "active_job_postings": 42}
+    good = {"company_name": "Good", "website": "https://good.test", "stage": "identity_confirmed"}
+    for record in (bad, good):
+        approve_identity(record, reviewer="fixture-reviewer")
+    summary = run_stage3([bad, good])
+    assert summary["validation_failures"] == 1
+    assert summary["enriched"] == 1

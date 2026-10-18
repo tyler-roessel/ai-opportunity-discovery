@@ -19,7 +19,7 @@ This code uses local JSON, deterministic rules, and evidence-based templates. It
 
 Use Python 3.10+. Install the test dependency with `python3 -m pip install -r requirements.txt`.
 
-The fixtures include an approved synthetic record, an unapproved new draft, and insufficient evidence. To approve a complete draft-ready record locally, call `approve_draft(record, reviewer="reviewer-name")`, then rerun Stage 5. The reviewer name is an operator assertion, not access control. Changes to reviewed content invalidate approval.
+The fixtures include an approved synthetic record, an unapproved new draft, and insufficient evidence. Identity review uses `approve_identity(record, reviewer="reviewer-name")` and is bound to the company name and website. Persisted states without matching review evidence stay on hold. To approve a complete draft-ready record, call `approve_draft(record, reviewer="reviewer-name")`, then rerun Stage 5. Reviewer names are operator assertions, not access control. Changes to reviewed identity or draft content invalidate approval.
 
 See [implementation status](docs/implementation-status.md) for remaining production boundaries and the historical workflow diagram's limits.
 

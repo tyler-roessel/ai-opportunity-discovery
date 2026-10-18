@@ -18,7 +18,8 @@
     ],
     "stage1_filter_decision": "passed",
     "stage1_filter_reason": "AI infrastructure signal in role and source context",
-    "needs_human_review": true
+    "needs_human_review": true,
+    "identity_approval_fingerprint": "1c641440fbf0a1e7cb5f458974f897a0709dab366236ecedd55a782f41f91098"
   },
   {
     "company_name": "LedgerBridge",
@@ -49,6 +50,9 @@
     "subject_line_2": "Implementation team growth",
     "email_draft": "Hi team,\n\nThe supplied source describes platform and implementation roles alongside onboarding workflow software. Is recruiting support relevant to your current plans?\n\nBest,",
     "draft_reviewed_by": "synthetic-fixture-reviewer",
-    "draft_approval_fingerprint": "bd35361071e250b431fa3811cd4b0ba78946a44d0514907d5ba2ff336c468f46"
+    "draft_approval_fingerprint": "bd35361071e250b431fa3811cd4b0ba78946a44d0514907d5ba2ff336c468f46",
+    "identity_review_status": "Approved",
+    "identity_reviewed_by": "synthetic-fixture-reviewer",
+    "identity_approval_fingerprint": "b325a2331dc5fd787424266150cd387a145e0ead69acd29c3f6c7d7051d64eae"
   }
 ]

@@ -2,9 +2,11 @@ from src.showcase.crm_handoff import approve_draft, build_stage5_crm_payload, is
 from src.showcase.filters import evaluate_stage1_record
 from src.showcase.pipeline import run_demo
 from src.showcase.states import CRM_NOT_READY, DRAFT_APPROVED, STAGE_DRAFT_READY
+from src.showcase.identity_review import approve_identity
 
 
 def reviewed(record):
+    approve_identity(record, reviewer="synthetic-reviewer")
     record["draft_status"] = "Draft Ready"
     approve_draft(record, reviewer="synthetic-reviewer")
 
