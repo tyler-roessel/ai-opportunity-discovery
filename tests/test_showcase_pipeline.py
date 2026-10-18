@@ -1,7 +1,12 @@
-from src.showcase.crm_handoff import build_stage5_crm_payload, is_stage5_crm_ready
+from src.showcase.crm_handoff import approve_draft, build_stage5_crm_payload, is_stage5_crm_ready
 from src.showcase.filters import evaluate_stage1_record
 from src.showcase.pipeline import run_demo
 from src.showcase.states import CRM_NOT_READY, DRAFT_APPROVED, STAGE_DRAFT_READY
+
+
+def reviewed(record):
+    record["draft_status"] = "Draft Ready"
+    approve_draft(record, reviewer="synthetic-reviewer")
 
 
 def test_terminal_parameters_map_to_source_client_request():
@@ -65,6 +70,7 @@ def test_approved_record_maps_to_generic_crm_payloads():
         "source_urls_used": "https://example-workflowharbor.test/careers",
     }
 
+    reviewed(record)
     attio = build_crm_payload(record, crm="attio")
     salesforce = build_crm_payload(record, crm="salesforce")
     hubspot = build_crm_payload(record, crm="hubspot")
@@ -96,6 +102,7 @@ def test_approved_record_maps_to_mcp_tool_call():
         "source_urls_used": "https://example-workflowharbor.test/careers",
     }
 
+    reviewed(record)
     call = build_mcp_tool_call(record, server="crm", tool="upsert_company")
 
     assert call["transport"] == "mcp"
@@ -150,6 +157,7 @@ def test_stage5_payload_requires_approval_gate():
         "source_urls_used": "https://example-workflowharbor.test",
     }
 
+    reviewed(record)
     assert is_stage5_crm_ready(record) is True
     payload = build_stage5_crm_payload(record)
     assert payload["name"] == "WorkflowHarbor"

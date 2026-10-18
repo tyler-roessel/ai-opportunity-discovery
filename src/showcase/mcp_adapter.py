@@ -29,6 +29,8 @@ def build_mcp_tool_call(
             "stage": record.get("stage"),
             "draft_status": record.get("draft_status"),
             "crm_sync_status": record.get("crm_sync_status"),
+            "reviewed_by": record.get("draft_reviewed_by"),
+            "content_fingerprint": record.get("draft_approval_fingerprint"),
         },
         "mode": "preview",
     }
