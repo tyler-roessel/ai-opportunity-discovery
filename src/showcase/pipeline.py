@@ -45,9 +45,12 @@ def run_stage1(records: list[dict[str, Any]]) -> dict[str, Any]:
         "errors": [],
     }
     for record in records:
-        if record.get("stage") not in {None, STAGE_DISCOVERED}:
-            continue
         try:
+            stage = record.get("stage")
+            if stage is not None and not isinstance(stage, str):
+                raise ValueError("stage must be a string")
+            if stage not in (None, STAGE_DISCOVERED) and record.get("stage1_filter_decision") != "error":
+                continue
             decision = evaluate_stage1_record(record)
             record["stage1_filter_decision"] = "passed" if decision.passed else "rejected"
             record["stage1_filter_reason"] = decision.reason
@@ -59,6 +62,7 @@ def run_stage1(records: list[dict[str, Any]]) -> dict[str, Any]:
                 results["rejected"] += 1
         except Exception as exc:
             record["stage"] = STAGE_NEEDS_REVIEW
+            record["stage1_filter_decision"] = "error"
             record["identity_review_status"] = "Needs Review"
             results["errors"].append({"company": record.get("company_name", "?"), "error": str(exc)})
     return results
@@ -67,10 +71,10 @@ def run_stage1(records: list[dict[str, Any]]) -> dict[str, Any]:
 def run_stage2(records: list[dict[str, Any]]) -> dict[str, Any]:
     results = {"stage": "Stage 2", "reviewed": 0, "identity_confirmed": 0, "needs_review": 0}
     for record in records:
-        if record.get("stage") not in {STAGE_DISCOVERED, STAGE_NEEDS_REVIEW}:
+        if record.get("stage") not in (STAGE_DISCOVERED, STAGE_NEEDS_REVIEW):
             continue
         results["reviewed"] += 1
-        if has_identity_review(record):
+        if has_identity_review(record) and record.get("stage1_filter_decision") not in ("error", "rejected"):
             record["stage"] = STAGE_IDENTITY_CONFIRMED
             record["identity_confidence"] = "HIGH"
             record["identity_reasoning"] = "Explicit identity review supplied with the input record."
@@ -99,7 +103,11 @@ def run_stage3(records: list[dict[str, Any]]) -> dict[str, Any]:
             continue
         results["fetched"] += 1
         raw_postings = record.get("active_job_postings")
-        if not has_identity_review(record) or (raw_postings is not None and not isinstance(raw_postings, list)):
+        if (
+            not has_identity_review(record)
+            or record.get("stage1_filter_decision") in ("error", "rejected")
+            or (raw_postings is not None and not isinstance(raw_postings, list))
+        ):
             record["stage"] = STAGE_NEEDS_REVIEW
             record["needs_human_review"] = True
             results["validation_failures"] += 1
@@ -147,9 +155,19 @@ def run_stage4(records: list[dict[str, Any]]) -> dict[str, Any]:
         if record.get("draft_status") == DRAFT_APPROVED:
             results["skipped_approved"] += 1
             continue
-        if record.get("draft_status") in {DRAFT_NEEDS_REVIEW, DRAFT_REJECTED}:
+        if record.get("draft_status") in (DRAFT_NEEDS_REVIEW, DRAFT_REJECTED):
             continue
         if record.get("icp_status") != "candidate":
+            continue
+        if (
+            not has_identity_review(record)
+            or record.get("stage1_filter_decision") in ("error", "rejected")
+            or any(not isinstance(record.get(field), str) or not record[field].strip()
+                   for field in ("company_name", "claims_used", "source_urls_used"))
+        ):
+            record["stage"] = STAGE_NEEDS_REVIEW
+            record["draft_status"] = DRAFT_NEEDS_REVIEW
+            results["errors"].append({"company": record.get("company_name", "?"), "error": "draft evidence is incomplete"})
             continue
         record.update(
             {

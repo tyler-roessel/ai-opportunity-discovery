@@ -52,7 +52,7 @@ def approve_draft(record: dict[str, Any], *, reviewer: str) -> None:
 
 
 def _has_valid_content(record: dict[str, Any]) -> bool:
-    if not has_identity_review(record):
+    if not has_identity_review(record) or record.get("stage1_filter_decision") in ("error", "rejected"):
         return False
     for field in REQUIRED_STAGE5_FIELDS - {"priority_score"}:
         if not isinstance(record.get(field), str) or not record[field].strip():
@@ -79,7 +79,7 @@ def is_stage5_crm_ready(record: dict[str, Any]) -> bool:
         return False
     if record.get("draft_status") != DRAFT_APPROVED:
         return False
-    if record.get("crm_sync_status") not in {CRM_NOT_READY, CRM_SYNCED_ERROR}:
+    if record.get("crm_sync_status") not in (CRM_NOT_READY, CRM_SYNCED_ERROR):
         return False
     return (
         _has_valid_content(record)

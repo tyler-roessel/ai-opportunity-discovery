@@ -190,3 +190,45 @@ def test_malformed_postings_are_held_without_aborting_other_records():
     summary = run_stage3([bad, good])
     assert summary["validation_failures"] == 1
     assert summary["enriched"] == 1
+
+
+def test_stage1_errors_must_pass_filtering_before_identity_can_resume():
+    record = {
+        "company_name": "Agency", "website": "https://agency.test", "stage": "discovered",
+        "description": "Recruitment agency", "active_job_postings": 42,
+    }
+    assert run_stage1([record])["errors"]
+    record["active_job_postings"] = []
+    approve_identity(record, reviewer="fixture-reviewer")
+    run_stage2([record])
+    assert record["stage"] == "needs_review"
+    run_stage1([record])
+    assert record["stage"] == "rejected"
+
+
+def test_corrected_filter_errors_can_resume_after_a_successful_filter_run():
+    record = {
+        "company_name": "Example", "website": "https://example.test", "stage": "discovered",
+        "vertical": "AI", "description": "Builds agent software", "active_job_postings": 42,
+    }
+    run_stage1([record])
+    record["active_job_postings"] = []
+    run_stage1([record])
+    approve_identity(record, reviewer="fixture-reviewer")
+    run_stage2([record])
+    assert record["stage"] == "identity_confirmed"
+
+
+@pytest.mark.parametrize("stage", [[], {}])
+def test_malformed_stage_does_not_abort_the_batch(stage):
+    records = [{"stage": stage}, {"company_name": "Example", "vertical": "AI", "description": "Agent software"}]
+    result = run_demo(records)
+    assert result["records"][0]["stage"] == "needs_review"
+    assert result["records"][1]["stage"] == "needs_review"
+
+
+def test_incomplete_enriched_record_is_held_instead_of_crashing_drafting():
+    record = draft()
+    record.update(stage="enriched", icp_status="candidate")
+    assert run_stage4([record])["errors"]
+    assert record["stage"] == "needs_review"
