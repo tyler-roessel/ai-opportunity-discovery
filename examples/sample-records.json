@@ -4,6 +4,8 @@
     "website": "https://example-northstar-agents.test",
     "vertical": "AI",
     "stage": "discovered",
+    "identity_review_status": "Approved",
+    "identity_reviewed_by": "synthetic-fixture-reviewer",
     "discovery_source": "portfolio_job_board",
     "posting_url": "https://jobs.example.test/northstar-agents/platform-engineer",
     "active_job_postings": [
@@ -16,7 +18,8 @@
     ],
     "stage1_filter_decision": "passed",
     "stage1_filter_reason": "AI infrastructure signal in role and source context",
-    "needs_human_review": true
+    "needs_human_review": true,
+    "identity_approval_fingerprint": "1c641440fbf0a1e7cb5f458974f897a0709dab366236ecedd55a782f41f91098"
   },
   {
     "company_name": "LedgerBridge",
@@ -45,7 +48,12 @@
     "source_urls_used": "https://example-workflowharbor.test/careers\nhttps://example-workflowharbor.test/product",
     "subject_line_1": "WorkflowHarbor platform hiring",
     "subject_line_2": "Implementation team growth",
-    "email_draft": "Hi team,\n\nNoticed WorkflowHarbor is hiring across platform and implementation roles while expanding onboarding workflow automation. That usually creates pressure around technical hiring and customer-delivery roles at the same time.\n\nOpen to a quick note on where specialized recruiting support could help?\n\nBest,"
+    "email_draft": "Hi team,\n\nThe supplied source describes platform and implementation roles alongside onboarding workflow software. Is recruiting support relevant to your current plans?\n\nBest,",
+    "draft_reviewed_by": "synthetic-fixture-reviewer",
+    "draft_approval_fingerprint": "5ef60eb7526b9e05f594e1829a3986af3ba2c26e29ff6133d38392ffeccb8ff8",
+    "identity_review_status": "Approved",
+    "identity_reviewed_by": "synthetic-fixture-reviewer",
+    "identity_approval_fingerprint": "b325a2331dc5fd787424266150cd387a145e0ead69acd29c3f6c7d7051d64eae",
+    "description": "Automates customer onboarding and handoffs across support, implementation, and account teams."
   }
 ]
-

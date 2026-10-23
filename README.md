@@ -2,7 +2,26 @@
 
 This repo is a public reference version of a private AI workflow. It preserves the real architecture, stage progression, orchestration patterns, and implementation lessons while using synthetic examples instead of private business data, credentials, schemas, customer/prospect details, raw prompts, or live integration identifiers.
 
-The important story is not "AI found some leads." The system started as sandboxed AI experiments, moved through human-reviewed stages, converted review feedback into rubrics and guardrails, and then moved into full AI automation once the five-stage workflow was reliable.
+The workflow design connects source evidence, review decisions, prioritization, drafting, and CRM handoff. The public sample demonstrates those contracts offline.
+
+## Executable Scope
+
+This code uses local JSON, deterministic rules, and evidence-based templates. It performs no model inference, live discovery, scraping, verification, sending, or CRM writes. The private-system narrative below supplies design context rather than proof of deployment or revenue results.
+
+| Capability | Public implementation |
+| --- | --- |
+| Identity | Explicit review fields; a website alone cannot confirm identity |
+| Enrichment | Transforms supplied context; never invents a company description |
+| Priority | Explained evidence-completeness rubric; not buying intent or a probability |
+| Drafting | Templates using supplied evidence; new drafts remain unapproved |
+| Approval | Explicit reviewer and digest binding approval to the reviewed content |
+| CRM / MCP | Validated mapping previews |
+
+Use Python 3.10+. Install the test dependency with `python3 -m pip install -r requirements.txt`.
+
+The fixtures include an approved synthetic record, an unapproved new draft, and insufficient evidence. Identity review uses `approve_identity(record, reviewer="reviewer-name")` and is bound to the company name and website. Persisted states without matching review evidence stay on hold. To approve a complete draft-ready record, call `approve_draft(record, reviewer="reviewer-name")`, then rerun Stage 5. Reviewer names are operator assertions, not access control. Changes to reviewed identity or draft content invalidate approval.
+
+See [implementation status](docs/implementation-status.md) for remaining production boundaries and the historical workflow diagram's limits.
 
 ## What This Demonstrates
 
@@ -10,7 +29,7 @@ The important story is not "AI found some leads." The system started as sandboxe
 - A practical human-in-the-loop path from sandbox scripts to repeatable automation.
 - Source-aware discovery with provenance carried into later stages.
 - Review gates that prevent weak records or speculative drafts from moving downstream.
-- CRM handoff logic that syncs only approved, traceable records.
+- CRM handoff validation that builds previews only for explicitly approved, traceable records.
 - Reusable agent-style capabilities for source registries, scraping, context intake, dedupe/history, review queues, enrichment, scoring, draft preparation, CRM handoff, reporting, context filing, and secret-safe handoffs.
 - Implementation patterns from the private operating repo.
 
